@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">YourClubMusic</string>
+    <string name="action_settings">Präferenzen ändern</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="currentMood">aktuelle Stimmung</string>
+    <string name="favoriteMusic">Mein Musikgeschmack</string>
+    <string name="sendFavoriteMusic">an Abstimmung teilnehmen</string>
+    <string name="availableUsers">Nutzer:</string>
+    <string name="connected">Verbunden</string>
+
+</resources>

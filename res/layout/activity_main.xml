@@ -1,0 +1,78 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical"
+    	android:weightSum="6" >
+
+        <TextView
+            android:id="@+id/textViewCurrentMood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:weightSum="1"
+            android:text="@string/currentMood"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <ListView
+            android:id="@+id/listViewCurrentMood"
+            android:layout_width="match_parent"
+            android:layout_height="187dp"
+            android:weightSum="3" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/textViewFavorteMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/favoriteMusic"
+            android:weightSum="1"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sendFavoriteMusic" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left" >
+
+            <TextView
+                android:id="@+id/textViewAvailableUsers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/availableUsers" />
+
+            <TextView
+                android:id="@+id/activeUsers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:layout_toRightOf="@+id/textViewAvailableUsers" />
+
+            <CheckBox
+                android:id="@+id/checkBoxConnected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connected"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
+       
+    </LinearLayout>
+
+</RelativeLayout>
