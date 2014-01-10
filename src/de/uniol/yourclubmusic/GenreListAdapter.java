@@ -1,5 +1,6 @@
 package de.uniol.yourclubmusic;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -25,6 +26,11 @@ public class GenreListAdapter extends ArrayAdapter<Genre> {
 		this.context=context;
 		this.layoutResourceId=resource;
 		this.genres=genres;
+		//register observer
+		for (Genre genre : genres) {
+			genre.registerGenreAdapter(this);
+		}
+		Collections.sort(genres);
 	}
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -33,7 +39,10 @@ public class GenreListAdapter extends ArrayAdapter<Genre> {
 			 // create view
 			 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			 view=inflater.inflate(R.layout.view_genre, parent, false);
-		 }			 
+
+			 
+		 }
+		 
 		 ImageView bar=(ImageView) view.findViewById(R.id.genrePercentBar);
 		 bar.setImageBitmap(drawBar(genres.get(position).getRatingInPercent()));
 		 ImageView image= (ImageView)view.findViewById(R.id.genreIcon);
@@ -54,6 +63,10 @@ public class GenreListAdapter extends ArrayAdapter<Genre> {
 		canvas.drawRect(0, 0, (float)ratingInPercent*2, 50, paint);
 			 
 		return bitmap;
+	}
+	public void update(){
+		Collections.sort(genres);
+		notifyDataSetChanged();
 	}
 
 }

@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
         ArrayAdapter<Genre> adapter= new GenreListAdapter(this,R.layout.view_genre,genres);
         ListView listView=(ListView)findViewById(R.id.listViewCurrentMood);
         listView.setAdapter(adapter);
+        genres.get(1).setRatingInPercent(22);
     }
 
 

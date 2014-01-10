@@ -1,9 +1,14 @@
 package de.uniol.yourclubmusic;
 
+import java.util.Comparator;
 
-public class Genre {
+import android.widget.ArrayAdapter;
+
+
+public class Genre  implements Comparable<Genre>{
 	private String name;
 	private double ratingPercent;
+	private GenreListAdapter adapter;//observer
 	int iconID;
 	
 	public Genre(String name, int iconID){
@@ -26,5 +31,16 @@ public class Genre {
 	}
 	public void setRatingInPercent(float ratingPercent){
 		this.ratingPercent=ratingPercent;
+		adapter.update();
+	}
+	public void registerGenreAdapter(GenreListAdapter adapter){
+		this.adapter=adapter;
+		
+	}
+	@Override
+	public int compareTo(Genre another) {
+		 if (getRatingInPercent() < another.getRatingInPercent()) return -1;
+	     if (getRatingInPercent() > another.getRatingInPercent()) return 1;
+	     return 0;
 	}
 }
