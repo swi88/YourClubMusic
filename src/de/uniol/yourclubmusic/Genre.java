@@ -1,7 +1,10 @@
 package de.uniol.yourclubmusic;
 
+import java.util.Comparator;	
+import android.widget.ArrayAdapter;
 
-public class Genre {
+
+public class Genre  implements Comparable<Genre> {
 	
 	public final static String ROCK = "Rock";
 	public final static String HIPHOP = "Hip-Hop";
@@ -21,30 +24,31 @@ public class Genre {
 	public final static String PUNK = "Punk";
 	public final static String HARDROCK = "Hardrock";
 	public final static String RNB = "R&B";
-	
+
 	public final static String[] genreArray= {
-			ALTERNATIVE,
-			BLUES,
-			DANCE,
-			ELEKTRO,
-			FUNK,
-			HARDROCK,
-			HIPHOP,
-			HOUSE,
-			JAZZ,
-			METAL,
-			NEWWAVE,
-			PUNK,
-			REGGAE,
-			RNB,
-			ROCK,
-			SOUL,
-			TECHNO,
-			TRANCE
+		ALTERNATIVE,
+		BLUES,
+		DANCE,
+		ELEKTRO,
+		FUNK,
+		HARDROCK,
+		HIPHOP,
+		HOUSE,
+		JAZZ,
+		METAL,
+		NEWWAVE,
+		PUNK,
+		REGGAE,
+		RNB,
+		ROCK,
+		SOUL,
+		TECHNO,
+		TRANCE
 	};
 	
 	private String name;
 	private double ratingPercent;
+	private GenreListAdapter adapter;//observer
 	int iconID;
 	
 	public Genre(String name, int iconID){
@@ -67,5 +71,16 @@ public class Genre {
 	}
 	public void setRatingInPercent(float ratingPercent){
 		this.ratingPercent=ratingPercent;
+		adapter.update();
+	}
+	public void registerGenreAdapter(GenreListAdapter adapter){
+		this.adapter=adapter;
+		
+	}
+	@Override
+	public int compareTo(Genre another) {
+		 if (getRatingInPercent() < another.getRatingInPercent()) return -1;
+	     if (getRatingInPercent() > another.getRatingInPercent()) return 1;
+	     return 0;
 	}
 }
