@@ -8,5 +8,7 @@
     <string name="availableUsers">Nutzer:</string>
     <string name="connected">Verbunden</string>
     <string name="add_button">Genre hinzufügen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="ok">OK</string>
 
 </resources>
