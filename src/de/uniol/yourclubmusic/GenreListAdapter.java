@@ -1,6 +1,5 @@
 package de.uniol.yourclubmusic;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -8,13 +7,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Cap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class GenreListAdapter extends ArrayAdapter<Genre> {

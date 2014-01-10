@@ -1,5 +1,6 @@
 package de.uniol.yourclubmusic;
 
+
 public class Genre {
 	private String name;
 	private double ratingPercent;

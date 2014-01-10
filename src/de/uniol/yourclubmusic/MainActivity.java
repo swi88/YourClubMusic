@@ -20,6 +20,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         //TODO in final version only create entry, if genre exists
         genres.add(new Genre("Rock", 75,R.drawable.rock));
+        genres.add(new Genre("Rock", 75,R.drawable.rock));
+        genres.add(new Genre("Rock", 75,R.drawable.rock));
+        genres.add(new Genre("Rock", 75,R.drawable.rock));
+        genres.add(new Genre("Rock", 75,R.drawable.rock));
+        genres.add(new Genre("Rock", 75,R.drawable.rock));
+        
         genres.add(new Genre("Alternative", 25,R.drawable.alternative));
         ArrayAdapter<Genre> adapter= new GenreListAdapter(this,R.layout.view_genre,genres);
         ListView listView=(ListView)findViewById(R.id.listViewCurrentMood);
