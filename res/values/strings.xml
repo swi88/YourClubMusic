@@ -9,5 +9,6 @@
     <string name="sendFavoriteMusic">an Abstimmung teilnehmen</string>
     <string name="availableUsers">Nutzer:</string>
     <string name="connected">Verbunden</string>
+    <string name="add_button">Genre hinzufügen</string>
 
 </resources>

@@ -5,6 +5,10 @@ public class Genre {
 	private double ratingPercent;
 	int iconID;
 	
+	public Genre(String name, int iconID){
+		this.name=name;
+		this.iconID=iconID;
+	}
 	public Genre(String name,double ratingPercent,int iconID){
 		this.name=name;
 		this.ratingPercent=ratingPercent;
