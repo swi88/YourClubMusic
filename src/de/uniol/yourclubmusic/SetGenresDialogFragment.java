@@ -78,7 +78,7 @@ public class SetGenresDialogFragment extends DialogFragment {
 	                   // User clicked OK, so save the selectedItems results somewhere
 	            	   SharedPreferences.Editor editor = sharedPref.edit();
 	            	   editor.putStringSet(getString(R.string.saved_preferred_genres), preferredGenres);
-	            	   for(String s : preferredGenres) System.out.print(s + ", "); System.out.println();
+	            	   // for(String s : preferredGenres) System.out.print(s + ", "); System.out.println();
 	            	   editor.apply(); //commit();
 	            	   
 	            	   // notify parent (SettingsActivity)
