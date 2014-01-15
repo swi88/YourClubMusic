@@ -11,5 +11,6 @@
     <string name="cancel">Abbrechen</string>
     <string name="ok">OK</string>
     <string name="refresh">Aktuallisieren</string>
+    <string name="connect">Verbindung</string>
 
 </resources>

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -31,7 +30,7 @@ public class MainActivity extends Activity {
         		
         		switch (msg.what) {
 				case CLIENT_OFFLINE: 
-					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(false);
+					//((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(false);
 					break;
 				case CLIENT_ONLINE:
 					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(true);
@@ -81,8 +80,6 @@ public class MainActivity extends Activity {
         }
         default:
             return super.onOptionsItemSelected(item);
+    	}
     }
-    }
-    
-    
 }
