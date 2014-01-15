@@ -10,5 +10,6 @@
     <string name="add_button">Genre hinzufügen</string>
     <string name="cancel">Abbrechen</string>
     <string name="ok">OK</string>
+    <string name="refresh">Aktuallisieren</string>
 
 </resources>
