@@ -9,12 +9,12 @@ import android.util.Log;
 
 public class JSONParser extends AsyncTask<JSONObject, Void, Void>  {
 	//TAGS GENRE
-	private static final String ID_GENRE="genre";
-	private static final String NAME_GENRE="name";
-	private static final String RATE_GENRE="rate";
+	public static final String ID_GENRE="genre";
+	public static final String NAME_GENRE="name";
+	public static final String RATE_GENRE="rate";
 	//TAGS logged in numbers
-	private static final String ID_USERS_LOGGED_IN="users";
-	private static final String ONLINE="number";
+	public static final String ID_USERS_LOGGED_IN="users";
+	public static final String ONLINE="number";
 
 	@Override
 	protected Void doInBackground(JSONObject... object) {
