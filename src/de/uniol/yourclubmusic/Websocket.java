@@ -9,13 +9,15 @@ import android.util.Log;
 import de.tavendo.autobahn.WebSocketConnection;
 import de.tavendo.autobahn.WebSocketException;
 import de.tavendo.autobahn.WebSocketHandler;
+import de.tavendo.autobahn.WebSocketOptions;
 import de.uniol.yourclubmusic.handler.HandlerClientOnlineOffline;
 
 public class Websocket {
 	private static Websocket instance=null;
 	private final WebSocketConnection mConnection = new WebSocketConnection();
 	static final String TAG = "Websocket";
-	private String wsuri = "ws://134.106.27.48:8080";
+	//private String wsuri = "ws://134.106.27.48:8080";
+	private String wsuri = "ws://192.168.178.30:8080";
 	Boolean isConnected;
 	ArrayList<Handler> handlerData;
 	HandlerClientOnlineOffline handlerOnOff;
@@ -31,6 +33,8 @@ public class Websocket {
 	
 	public void start() { 
 	   try {
+		   WebSocketOptions options= new WebSocketOptions();
+		   
 	      mConnection.connect(wsuri, new WebSocketHandler() {
 	 
 	         @Override
