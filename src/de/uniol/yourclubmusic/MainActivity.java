@@ -102,8 +102,8 @@ public class MainActivity extends Activity {
         	public void handleMessage(Message msg) {
         		Bundle bundle= msg.getData();
         		String string= "Current Location:"+bundle.getDouble(LATITUDE)+"/"+bundle.getDouble(LONGITUDE);
-        		Toast.makeText(getApplicationContext(), string, Toast.LENGTH_LONG).show();
-        		//TODO send location to server
+        		//Toast.makeText(getApplicationContext(), string, Toast.LENGTH_LONG).show();
+        		//TODO check distance and send location to server
         		//auf server secrurity part implementieren (distanz berechnen und entscheiden ob client berechtigt ist)
         		super.handleMessage(msg);
         	}
