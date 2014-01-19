@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private List<Genre> genres= new ArrayList<Genre>();
@@ -33,15 +32,16 @@ public class MainActivity extends Activity {
         registerHandlers();
         registerLocationListener();
         setContentView(R.layout.activity_main);
-        //TODO in final version only create entry, if genre exists
-        genres.add(new Genre("Rock", 75,R.drawable.rock));
-        genres.add(new Genre("Rock", 75,R.drawable.rock));
-        genres.add(new Genre("Rock", 75,R.drawable.rock));
-        genres.add(new Genre("Rock", 75,R.drawable.rock));
-        genres.add(new Genre("Rock", 75,R.drawable.rock));
-        genres.add(new Genre("Rock", 75,R.drawable.rock));
         
-        genres.add(new Genre("Alternative", 25,R.drawable.alternative));
+        //TODO in final version only create entry, if genre exists
+        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.ALTERNATIVE, 25));
+        
         ArrayAdapter<Genre> adapter= new GenreListAdapter(this,R.layout.view_genre,genres);
         ListView listView=(ListView)findViewById(R.id.listViewCurrentMood);
         listView.setAdapter(adapter);
@@ -100,8 +100,8 @@ public class MainActivity extends Activity {
         handlerLocationChanged= new HandlerLocationChanged(){
         	@Override
         	public void handleMessage(Message msg) {
-        		Bundle bundle= msg.getData();
-        		String string= "Current Location:"+bundle.getDouble(LATITUDE)+"/"+bundle.getDouble(LONGITUDE);
+        		//Bundle bundle= msg.getData();
+        		//String string= "Current Location:"+bundle.getDouble(LATITUDE)+"/"+bundle.getDouble(LONGITUDE);
         		//Toast.makeText(getApplicationContext(), string, Toast.LENGTH_LONG).show();
         		//TODO check distance and send location to server
         		//auf server secrurity part implementieren (distanz berechnen und entscheiden ob client berechtigt ist)

@@ -12,11 +12,11 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -24,14 +24,22 @@ import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
 	
-	ArrayList<Integer> selectedGenres;
+	static class PrefferedGenresHandler extends Handler {
+		SettingsActivity settingsActivity;
+		
+		public PrefferedGenresHandler(SettingsActivity settingsActivity) {
+			this.settingsActivity = settingsActivity;
+		}
 
-	private Handler newPrefferedGenresHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			updateView();
+			settingsActivity.updateView();
 		}
-	};
+	}
+	
+	ArrayList<Integer> selectedGenres;
+
+	private Handler newPrefferedGenresHandler = new PrefferedGenresHandler(this);
 	
 	ArrayAdapter<Genre> genresAdapter;
 	
@@ -63,7 +71,7 @@ public class SettingsActivity extends Activity {
                     		// Copy because preferredGenresOld is immutable
                     		final Set<String> preferredGenres = new HashSet<String>(preferredGenresOld);
                     		if(preferredGenres.remove(genre)) {
-                    			System.out.println("Removing " + genre);
+                    			Log.i("SettingsActivity", "Removing " + genre);
                     			SharedPreferences.Editor editor = sharedPref.edit();
                     			editor.putStringSet(getString(R.string.saved_preferred_genres), preferredGenres);
                     			editor.apply();
@@ -103,7 +111,7 @@ public class SettingsActivity extends Activity {
 		// Update view
 		genresAdapter.clear();
 		for (String genreID : preferredGenresList) {
-			genresAdapter.add(new Genre(genreID, R.drawable.rock)); // TODO drawable
+			genresAdapter.add(new Genre(genreID));
 		}
 	}
 	

@@ -1,6 +1,5 @@
 package de.uniol.yourclubmusic;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,7 +13,6 @@ public class SwipeDetector implements View.OnTouchListener {
         None // when no action was detected
     }
 
-    private static final String logTag = "SwipeDetector";
     private static final int HORIZONTAL_MIN_DISTANCE = 100;
     private float downX, upX;
     private Action mSwipeDetected = Action.None;

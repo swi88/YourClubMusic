@@ -13,7 +13,7 @@
         android:id="@+id/genreIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/rock"
+        android:src="@drawable/genre_rock"
         android:weightSum="1" />
 
     <ImageView
@@ -27,7 +27,6 @@
         android:id="@+id/genrePercentRate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="70%"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_toRightOf="@+id/genrePercentBar"
         />
