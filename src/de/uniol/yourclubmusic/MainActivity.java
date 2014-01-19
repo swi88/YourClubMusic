@@ -35,11 +35,11 @@ public class MainActivity extends Activity {
         
         //TODO in final version only create entry, if genre exists
         genres.add(new Genre(Genre.ROCK, 75));
-        genres.add(new Genre(Genre.ROCK, 75));
-        genres.add(new Genre(Genre.ROCK, 75));
-        genres.add(new Genre(Genre.ROCK, 75));
-        genres.add(new Genre(Genre.ROCK, 75));
-        genres.add(new Genre(Genre.ROCK, 75));
+        genres.add(new Genre(Genre.BLUES, 70));
+        genres.add(new Genre(Genre.HARDROCK, 62));
+        genres.add(new Genre(Genre.JAZZ, 30));
+        genres.add(new Genre(Genre.NEWWAVE, 29));
+        genres.add(new Genre(Genre.REGGAE, 56));
         genres.add(new Genre(Genre.ALTERNATIVE, 25));
         
         ArrayAdapter<Genre> adapter= new GenreListAdapter(this,R.layout.view_genre,genres);
