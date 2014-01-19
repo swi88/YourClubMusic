@@ -10,14 +10,15 @@
 
     <ImageView
         android:id="@+id/genreIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/genre_item_height"
+        android:layout_height="@dimen/genre_item_height"
+        android:scaleType="fitXY"
         android:src="@drawable/genre_rock" />
 
     <TextView
         android:id="@+id/genreDescription"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/genre_item_height"
         android:layout_alignBottom="@+id/genreIcon"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/genreIcon"
