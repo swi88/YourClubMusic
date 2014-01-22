@@ -7,21 +7,13 @@ import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import android.content.IntentFilter;
-import android.content.IntentFilter.MalformedMimeTypeException;
 import android.location.LocationManager;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +30,9 @@ import de.uniol.yourclubmusic.handler.HandlerReceiveData;
 import de.uniol.yourclubmusic.util.LocationListener;
 
 public class MainActivity extends Activity {
+	
+	public static final String EXTRA_MESSAGE = "CODEOFTHEDAY";
+	
 	private List<Genre> genres= new ArrayList<Genre>();
 	private Websocket socket;
 	
@@ -45,13 +40,6 @@ public class MainActivity extends Activity {
 	private HandlerLocationChanged handlerLocationChanged;
 	private HandlerReceiveData handlerReceiveData;
 	private ArrayAdapter<Genre> genreAdapter;
-	
-    private NfcAdapter mAdapter;
-    private PendingIntent mPendingIntent;
-    private IntentFilter[] mFilters;
-    private String[][] mTechLists;
-    private TextView mText;
-    private int mCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,103 +55,20 @@ public class MainActivity extends Activity {
        
         ListView listView=(ListView)findViewById(R.id.listViewCurrentMood);
         listView.setAdapter(genreAdapter);
-
-        
-        /*
-         * Note:
-         * 
-         * Is used the "NDEF Writer" app to write the following on a nfc tag:
-         * 
-         * value    = Amadeus		(Example, this is the 'code of the day', which is required to vote)
-         * Mimetype = application/de.uniol.yourclubmusic
-         */
-        
-        
-        mAdapter = NfcAdapter.getDefaultAdapter(this);
-
-        // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
-        // will fill in the intent with the details of the discovered tag before delivering to
-        // this activity.
-        mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
-        // Setup an intent filter for "application/de.uniol.yourclubmusic" MIME based dispatches
-        IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
-        try {
-            // ndef.addDataType("*/*");
-        	ndef.addDataType("application/de.uniol.yourclubmusic");
-        } catch (MalformedMimeTypeException e) {
-            throw new RuntimeException("fail", e);
-        }
-        mFilters = new IntentFilter[] {
-                ndef,
-        };
-
-        // Setup a tech list for all NfcF tags
-        mTechLists = new String[][] { new String[] { NfcF.class.getName() } };
-        
-        
-        String payloadString = tryToExtractNFCPayload(getIntent());
-        
-        if(payloadString != null) {
-        	Log.i("OnCreate", "Code of the day is: " + payloadString);
-        }
     }
 
-    @Override
+	@Override
 	protected void onResume() {
-        super.onResume();
-        if (mAdapter != null) mAdapter.enableForegroundDispatch(this, mPendingIntent, mFilters,
-                mTechLists);
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-        Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
-        
-        
-        String payloadString = tryToExtractNFCPayload(intent);
-        
-        if(payloadString != null) {
-        	Log.i("Foreground dispatch", "Code of the day is: " + payloadString);
-        }
-	}
-
-	private String tryToExtractNFCPayload(Intent intent) {
-		String payloadString = null;
-        
-        // Get Ndef messages from nfc tag
-        NdefMessage[] msgs = null;
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            }
-        }
-
-        //process the messages array (extract our desired payload string)
-        if(msgs != null && msgs.length>0) {
-        	// System.out.println("xxx_" + Arrays.toString(msgs));
-        	NdefRecord[] records = msgs[0].getRecords();
-        	if(records != null && records.length>0) {
-        		// System.out.println("xxy_" + records[0]);
-        		byte[] payload = records[0].getPayload();
-        		if(payload.length > 0) { // payload always exists, but may be of len 0
-        			payloadString = new String(payload);
-        		}
-        	}
-        }
-		return payloadString;
-	}
-
-	@Override
-	protected void onPause() {
-        super.onPause();
-        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+		super.onResume();
+		
+		Intent intent = getIntent();
+		String code = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+		
+		if(code != null) {
+			Log.i("Main/onResume", "Current code is: " + code);
+		} else {
+			Log.i("Main/onResume", "Current code is not set");
+		}
 	}
 
 	@Override
