@@ -32,7 +32,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TextView;
 import de.uniol.yourclubmusic.handler.HandlerClientOnlineOffline;
 import de.uniol.yourclubmusic.handler.HandlerLocationChanged;
 import de.uniol.yourclubmusic.handler.HandlerReceiveData;
