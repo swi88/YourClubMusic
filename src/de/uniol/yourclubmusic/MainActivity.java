@@ -66,9 +66,21 @@ public class MainActivity extends Activity {
 		
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
+			
+			connectToClub(code);
+			// Update view
+			// in the future maybe grep the first part, if we use an actual code,
+			// that changes, e.g "Amadeus:hF6Dbcg"
+			this.setTitle(code + " - " + getString(R.string.app_name));
 		} else {
 			Log.i("Main/onResume", "Current code is not set");
 		}
+	}
+
+	private void connectToClub(String code) {
+		// TODO open the websocket here
+		// Be careful, when the Tag is scanned twice, this activity gets restarted
+		// But maybe we should ignore this case for now
 	}
 
 	@Override
