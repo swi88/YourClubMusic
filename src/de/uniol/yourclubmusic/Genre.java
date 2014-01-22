@@ -32,9 +32,9 @@ public class Genre  implements Comparable<Genre> {
 		this(name, -1);
 	}
 	
-	Genre(String name,double ratingPercent){
+	Genre(String name,double voting){
 		this.name=name;
-		this.ratingPercent=ratingPercent;
+		this.ratingPercent=voting;
 
 		// Switch not possible in Java 1.6
 		if(name.equals(ALTERNATIVE)) {

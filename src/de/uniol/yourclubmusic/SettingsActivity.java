@@ -110,9 +110,13 @@ public class SettingsActivity extends Activity {
 		
 		// Update view
 		genresAdapter.clear();
+		ArrayList<Genre> genres= new ArrayList<Genre>();
 		for (String genreID : preferredGenresList) {
-			genresAdapter.add(new Genre(genreID));
+			Genre g= new Genre(genreID);
+			genresAdapter.add(g);
+			genres.add(g);
 		}
+		Websocket.getInstance().sendGenres(genres);
 	}
 	
 	@Override
