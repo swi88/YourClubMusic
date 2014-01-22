@@ -98,6 +98,8 @@ public class MainActivity extends Activity {
 		// TODO open the websocket here
 		// Be careful, when the Tag is scanned twice, this activity gets restarted
 		// But maybe we should ignore this case for now
+		this.setTitle(code + " - " + getString(R.string.app_name));
+	    socket.setStations(code);
 	}
 
 	@Override
@@ -199,7 +201,7 @@ public class MainActivity extends Activity {
 		    	            @Override
 		    	            public void onClick(DialogInterface dialog, 
 		    	                    int which) {
-		          		      socket.setStations(stations.get(selectedStation));
+		    	            	connectToClub(stations.get(selectedStation));
 		    	            }
 		    	        });
         		     builder.create().show();

@@ -4,7 +4,7 @@
     <string name="app_name">YourClubMusic</string>
     <string name="action_settings">Präferenzen ändern</string>
     <string name="currentMood">Gewünschte Genres</string>
-    <string name="sendFavoriteMusic">an Abstimmung teilnehmen</string>
+    <string name="sendFavoriteMusic">an Abstimmung teilnehmen?</string>
     <string name="availableUsers">Nutzer:</string>
     <string name="connected">Verbunden</string>
     <string name="add_button">Genre hinzufügen</string>
