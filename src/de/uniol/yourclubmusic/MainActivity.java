@@ -96,6 +96,13 @@ public class MainActivity extends Activity {
 
         // Setup a tech list for all NfcF tags
         mTechLists = new String[][] { new String[] { NfcF.class.getName() } };
+        
+        
+        String payloadString = tryToExtractNFCPayload(getIntent());
+        
+        if(payloadString != null) {
+        	Log.i("OnCreate", "Code of the day is: " + payloadString);
+        }
     }
 
     @Override
@@ -110,10 +117,19 @@ public class MainActivity extends Activity {
 		super.onNewIntent(intent);
         Log.i("Foreground dispatch", "Discovered tag with intent: " + intent);
         
-        NdefMessage[] msgs = null;
-        String payloadString = null;
+        
+        String payloadString = tryToExtractNFCPayload(intent);
+        
+        if(payloadString != null) {
+        	Log.i("Foreground dispatch", "Code of the day is: " + payloadString);
+        }
+	}
+
+	private String tryToExtractNFCPayload(Intent intent) {
+		String payloadString = null;
         
         // Get Ndef messages from nfc tag
+        NdefMessage[] msgs = null;
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMsgs != null) {
@@ -136,10 +152,7 @@ public class MainActivity extends Activity {
         		}
         	}
         }
-        
-        if(payloadString != null) {
-        	Log.i("Foreground dispatch", "Code of the day is: " + payloadString);
-        }
+		return payloadString;
 	}
 
 	@Override
