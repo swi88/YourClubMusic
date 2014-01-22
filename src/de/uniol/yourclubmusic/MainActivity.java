@@ -11,6 +11,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
 import android.content.IntentFilter;
 import android.content.IntentFilter.MalformedMimeTypeException;
@@ -40,6 +41,7 @@ import de.uniol.yourclubmusic.util.LocationListener;
 public class MainActivity extends Activity {
 	private List<Genre> genres= new ArrayList<Genre>();
 	private Websocket socket;
+	static final String TAG = "MainActivity";
 	
 	private HandlerClientOnlineOffline handlerOnOff;
 	private HandlerLocationChanged handlerLocationChanged;
@@ -52,11 +54,14 @@ public class MainActivity extends Activity {
     private String[][] mTechLists;
     private TextView mText;
     private int mCount = 0;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPref= this.getSharedPreferences(
+				getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         socket= Websocket.getInstance();
         setContentView(R.layout.activity_main);
         registerHandlers();
@@ -103,7 +108,9 @@ public class MainActivity extends Activity {
         mTechLists = new String[][] { new String[] { NfcF.class.getName() } };
     }
 
-    @Override
+		
+
+	@Override
 	protected void onResume() {
         super.onResume();
         if (mAdapter != null) mAdapter.enableForegroundDispatch(this, mPendingIntent, mFilters,
@@ -241,8 +248,6 @@ public class MainActivity extends Activity {
 
 	protected List<Genre> getGenres() {
 		ArrayList<Genre> preferedGenres= new ArrayList<Genre>();
-		final SharedPreferences sharedPref = this.getSharedPreferences(
-				getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 		final Set<String> preferredGenres = sharedPref.getStringSet(
 				getString(R.string.saved_preferred_genres),
 				new HashSet<String>());

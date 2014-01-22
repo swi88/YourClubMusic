@@ -60,8 +60,8 @@ public class Websocket {
 						ArrayList<Genre> newGenres= new ArrayList<Genre>();
 							for (int i = 0; i < genres.length(); i++) {
 								JSONObject genre = genres.getJSONObject(i).getJSONObject("genre");
-								Log.d(TAG,genre.getString("name")+" "+genre.getInt("votings")/(double)totalVotings );
-								newGenres.add(new Genre(genre.getString("name"),( genre.getInt("votings")/(double)totalVotings)*100));
+								double voting= Math.round((genre.getInt("votings")/(double)totalVotings)*100);
+								newGenres.add(new Genre(genre.getString("name"),voting));
 							}
 							handlerReceiveData.sendData(newGenres, users);
 						
