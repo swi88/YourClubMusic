@@ -41,6 +41,8 @@ public class Genre  implements Comparable<Genre> {
 			iconID = R.drawable.genre_alternative;
 		} else if(name.equals(BLUES)) {
 			iconID = R.drawable.genre_blues;
+		} else if(name.equals(DANCE)) {
+			iconID = R.drawable.genre_dance;
 		} else if(name.equals(ELEKTRO)) {
 			iconID = R.drawable.genre_elektro;
 		} else if(name.equals(FUNK)) {
@@ -49,6 +51,8 @@ public class Genre  implements Comparable<Genre> {
 			iconID = R.drawable.genre_hardrock;
 		} else if(name.equals(HIPHOP)) {
 			iconID = R.drawable.genre_hiphop;
+		} else if(name.equals(HOUSE)) {
+			iconID = R.drawable.genre_house;
 		} else if(name.equals(JAZZ)) {
 			iconID = R.drawable.genre_jazz;
 		} else if(name.equals(METAL)) {
@@ -65,6 +69,10 @@ public class Genre  implements Comparable<Genre> {
 			iconID = R.drawable.genre_rock;
 		} else if(name.equals(SOUL)) {
 			iconID = R.drawable.genre_soul;
+		} else if(name.equals(TECHNO)) {
+			iconID = R.drawable.genre_techno;
+		} else if(name.equals(TRANCE)) {
+			iconID = R.drawable.genre_trance;
 		} else {
 			Log.i("Genre", "Using default icon for " + name);
 			iconID = R.drawable.genre_default;
