@@ -7,13 +7,16 @@ import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
 import android.content.IntentFilter;
+import android.content.DialogInterface.OnClickListener;
 import android.content.IntentFilter.MalformedMimeTypeException;
 import android.location.LocationManager;
 import android.nfc.NdefMessage;
@@ -54,10 +57,13 @@ public class MainActivity extends Activity {
     private String[][] mTechLists;
     private TextView mText;
     private int mCount = 0;
+    private int selectedStation=0;
+    private Context mContext; 
     private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	mContext=this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sharedPref= this.getSharedPreferences(
@@ -188,6 +194,7 @@ public class MainActivity extends Activity {
             startActivity(intentSettings);
             return true;
         case R.id.connect:{
+        	//get list of stations
         	socket.start();
         	return true;
         }
@@ -233,15 +240,50 @@ public class MainActivity extends Activity {
         handlerReceiveData= new HandlerReceiveData(){
         	public void handleMessage(Message msg) {
         		Bundle bundle= msg.getData();
-        		ArrayList<Genre> genresNew= (ArrayList<Genre>) bundle.getSerializable(GENRES);
-        		genres.clear();
-        		genreAdapter.clear();
-        		
-        		for (Genre genre : genresNew) {
-					genres.add(genre);
-				}
-        		((TextView)findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
-        		
+        		if(bundle.containsKey(GENRES)){
+        			ArrayList<Genre> genresNew= (ArrayList<Genre>) bundle.getSerializable(GENRES);
+            		genres.clear();
+            		genreAdapter.clear();
+            		
+            		for (Genre genre : genresNew) {
+    					genres.add(genre);
+    				}
+            		((TextView)findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
+        		}else if(bundle.containsKey(STATIONS)){
+        			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);
+        			AlertDialog.Builder builder = 
+        		            new AlertDialog.Builder(mContext);
+        		        builder.setTitle("Wähle eine Station:");
+        		        builder.setSingleChoiceItems(
+        		                stations.toArray(new CharSequence[stations.size()]), 
+        		                -1,new DialogInterface.OnClickListener() {
+        		    				
+        		    				@Override
+        		    				public void onClick(DialogInterface dialog, int which) {
+        		    					selectedStation=which;
+        		    				}
+        		    			});
+        		      builder.setCancelable(true)
+        		      .setNegativeButton("abbrechen", 
+        		    	        new DialogInterface.OnClickListener() 
+        		    	        {
+        		    	            @Override
+        		    	            public void onClick(DialogInterface dialog, 
+        		    	                    int which) {
+        		    	               
+        		    	            }
+        		    	        });
+        		     builder.setPositiveButton("verbinden",  new DialogInterface.OnClickListener() 
+		    	        {
+		    	            @Override
+		    	            public void onClick(DialogInterface dialog, 
+		    	                    int which) {
+		          		      socket.setStations(stations.get(selectedStation));
+		    	            }
+		    	        });
+        		     builder.create().show();
+        			//socket.setStations("Amadeus");
+        		}
         	};
         };
 

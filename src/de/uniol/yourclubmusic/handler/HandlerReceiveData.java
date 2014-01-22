@@ -12,13 +12,22 @@ public class HandlerReceiveData extends Handler{
 			
 			public static final String GENRES="genres";
 			public static final String USERS="users";
+			public static final String STATIONS="stations";
 			
-			public void sendData(ArrayList<Genre> genres,int users){
+			public void sendStationData(ArrayList<Genre> genres,int users){
 				Message msg = new Message();
 		 	   Bundle bundle = new Bundle();
 		 	   bundle.putSerializable(GENRES, genres);
 		 	   bundle.putInt(USERS, users);
 		 	   msg.setData(bundle);
 		 	   sendMessage(msg);
+			}
+
+			public void sendStations(ArrayList<String> stations) {
+				Message msg = new Message();
+			 	   Bundle bundle = new Bundle();
+			 	   bundle.putSerializable(STATIONS, stations);
+			 	   msg.setData(bundle);
+			 	   sendMessage(msg);
 			}
 }

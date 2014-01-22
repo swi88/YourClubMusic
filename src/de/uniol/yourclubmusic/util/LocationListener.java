@@ -3,7 +3,6 @@ package de.uniol.yourclubmusic.util;
 import de.uniol.yourclubmusic.handler.HandlerLocationChanged;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 
 public class LocationListener  implements android.location.LocationListener{
 	private static int DISTANCE_IN_METER=10;

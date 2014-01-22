@@ -19,11 +19,12 @@ import de.uniol.yourclubmusic.handler.HandlerReceiveData;
 public class Websocket {
 	private static Websocket instance=null;
 	static final String TAG = "Websocket";
-	//private String wsuri = "ws://192.168.43.247:8008";
-	private String wsuri = "ws://134.106.11.64:8008";
+	private String wsuri = "ws://192.168.178.30:8008";
+	//private String wsuri = "ws://134.106.11.64:8008";
 	Boolean isConnected;
 	WebSocketClient client;
 	double latitude,longitude;
+	String connectedToStation;
 
 	HandlerClientOnlineOffline handlerOnOff;
 	HandlerReceiveData handlerReceiveData;
@@ -43,9 +44,6 @@ public class Websocket {
 		   client = new WebSocketClient(URI.create(wsuri), new WebSocketClient.Listener() {
 			    @Override
 			    public void onConnect() {
-		            Log.d(TAG, "Status: Connected to " + wsuri);
-		            handlerOnOff.sendClientOnline();
-		            isConnected=true;
 			    }
 
 			    @Override
@@ -53,21 +51,30 @@ public class Websocket {
 			        Log.d(TAG, String.format("Got string message! %s", message));
 			        try {
 						JSONObject mainObject = new JSONObject(message);
-
-						JSONArray genres= mainObject.getJSONArray("genres");
-						int users=mainObject.getInt("users");
-						int totalVotings=mainObject.getInt("totalVotings");
-						ArrayList<Genre> newGenres= new ArrayList<Genre>();
-							for (int i = 0; i < genres.length(); i++) {
-								JSONObject genre = genres.getJSONObject(i).getJSONObject("genre");
-								double voting= Math.round((genre.getInt("votings")/(double)totalVotings)*100);
-								newGenres.add(new Genre(genre.getString("name"),voting));
+						if(mainObject.has("genres") &&mainObject.has("users")&&mainObject.has("totalVotings")){
+							if(!isConnected){
+								Log.d(TAG, "Status: Connected to " + wsuri);
+					            handlerOnOff.sendClientOnline();
+					            isConnected=true;
 							}
-							handlerReceiveData.sendData(newGenres, users);
-						
-						
-						
-						
+							JSONArray genres= mainObject.getJSONArray("genres");
+							int users=mainObject.getInt("users");
+							int totalVotings=mainObject.getInt("totalVotings");
+							ArrayList<Genre> newGenres= new ArrayList<Genre>();
+								for (int i = 0; i < genres.length(); i++) {
+									JSONObject genre = genres.getJSONObject(i).getJSONObject("genre");
+									double voting= Math.round((genre.getInt("votings")/(double)totalVotings)*100);
+									newGenres.add(new Genre(genre.getString("name"),voting));
+								}
+								handlerReceiveData.sendStationData(newGenres, users);	
+						}else if(mainObject.has("stations")){
+							JSONArray stationsJson= mainObject.getJSONArray("stations");
+							ArrayList<String> stations= new ArrayList<String>();
+							for (int i = 0; i < stationsJson.length(); i++) {
+								stations.add(stationsJson.getJSONObject(i).getString("name"));
+							}
+							handlerReceiveData.sendStations(stations);	
+						}
 						
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
@@ -120,6 +127,7 @@ public class Websocket {
 					jsonGenres.put(object);
 				}
 				jsonObject.put("genres", jsonGenres);
+				jsonObject.put("station", connectedToStation);
 				JSONArray jsonLocation= new JSONArray();
 				jsonLocation.put(new JSONObject().put("latitude", latitude));
 				jsonLocation.put(new JSONObject().put("longitude", longitude));
@@ -141,6 +149,7 @@ public class Websocket {
 			try{
 				JSONObject jsonObject= new JSONObject();
 				JSONArray jsonLocation= new JSONArray();
+				jsonObject.put("station", connectedToStation);
 				jsonLocation.put(new JSONObject().put("latitude", latitude));
 				jsonLocation.put(new JSONObject().put("longitude", longitude));
 				jsonObject.put("location", jsonLocation);
@@ -151,5 +160,17 @@ public class Websocket {
 			}
 		}
 		
-	}	
+	}
+	public void setStations(String station) {
+		JSONObject jsonObject= new JSONObject();
+		try {
+			jsonObject.put("station", station);
+			client.send(jsonObject.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.connectedToStation=station;
+		
+	}
 }
