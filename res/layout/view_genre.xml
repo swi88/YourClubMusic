@@ -11,9 +11,10 @@
 
     <ImageView
         android:id="@+id/genreIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/rock"
+        android:layout_width="@dimen/genre_item_height"
+        android:layout_height="@dimen/genre_item_height"
+        android:scaleType="fitXY"
+        android:src="@drawable/genre_rock"
         android:weightSum="1" />
 
     <ImageView
@@ -21,15 +22,15 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/genreIcon"
+        android:layout_centerInParent="true"
         android:weightSum="4" />
 
     <TextView
         android:id="@+id/genrePercentRate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="70%"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_toRightOf="@+id/genrePercentBar"
-        />
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

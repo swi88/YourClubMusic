@@ -1,8 +1,6 @@
 package de.uniol.yourclubmusic;
 
-import java.util.Comparator;	
-import android.widget.ArrayAdapter;
-
+import android.util.Log;
 
 public class Genre  implements Comparable<Genre> {
 	
@@ -24,41 +22,53 @@ public class Genre  implements Comparable<Genre> {
 	public final static String PUNK = "Punk";
 	public final static String HARDROCK = "Hardrock";
 	public final static String RNB = "R&B";
-
-	public final static String[] genreArray= {
-		ALTERNATIVE,
-		BLUES,
-		DANCE,
-		ELEKTRO,
-		FUNK,
-		HARDROCK,
-		HIPHOP,
-		HOUSE,
-		JAZZ,
-		METAL,
-		NEWWAVE,
-		PUNK,
-		REGGAE,
-		RNB,
-		ROCK,
-		SOUL,
-		TECHNO,
-		TRANCE
-	};
 	
 	private String name;
 	private double ratingPercent;
 	private GenreListAdapter adapter;//observer
-	int iconID;
+	private int iconID;
 	
-	public Genre(String name, int iconID){
-		this.name=name;
-		this.iconID=iconID;
+	public Genre(String name){
+		this(name, -1);
 	}
-	public Genre(String name,double ratingPercent,int iconID){
+	
+	Genre(String name,double ratingPercent){
 		this.name=name;
 		this.ratingPercent=ratingPercent;
-		this.iconID=iconID;
+
+		// Switch not possible in Java 1.6
+		if(name.equals(ALTERNATIVE)) {
+			iconID = R.drawable.genre_alternative;
+		} else if(name.equals(BLUES)) {
+			iconID = R.drawable.genre_blues;
+		} else if(name.equals(ELEKTRO)) {
+			iconID = R.drawable.genre_elektro;
+		} else if(name.equals(FUNK)) {
+			iconID = R.drawable.genre_funk;
+		} else if(name.equals(HARDROCK)) {
+			iconID = R.drawable.genre_hardrock;
+		} else if(name.equals(HIPHOP)) {
+			iconID = R.drawable.genre_hiphop;
+		} else if(name.equals(JAZZ)) {
+			iconID = R.drawable.genre_jazz;
+		} else if(name.equals(METAL)) {
+			iconID = R.drawable.genre_metal;
+		} else if(name.equals(NEWWAVE)) {
+			iconID = R.drawable.genre_newwave;
+		} else if(name.equals(PUNK)) {
+			iconID = R.drawable.genre_punk;
+		} else if(name.equals(REGGAE)) {
+			iconID = R.drawable.genre_reggae;
+		} else if(name.equals(RNB)) {
+			iconID = R.drawable.genre_rnb;
+		} else if(name.equals(ROCK)) {
+			iconID = R.drawable.genre_rock;
+		} else if(name.equals(SOUL)) {
+			iconID = R.drawable.genre_soul;
+		} else {
+			Log.i("Genre", "Using default icon for " + name);
+			iconID = R.drawable.genre_default;
+		}
 	}
 	public int getIconID(){
 		return iconID;

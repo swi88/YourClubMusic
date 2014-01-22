@@ -9,50 +9,70 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:weightSum="6"
     tools:context=".MainActivity" >
+
     <LinearLayout
-		android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:weightSum="2"
-		>
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/am_relativeLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:weightSum="2" >
+
         <TextView
             android:id="@+id/textViewCurrentMood"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/currentMood"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <ListView
             android:id="@+id/listViewCurrentMood"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2" >
+            android:layout_height="fill_parent" >
         </ListView>
-        <Switch
-            android:id="@+id/switchVoting"
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/am_relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true" >
+
+        <TextView
+            android:id="@+id/textViewAvailableUsers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="@string/availableUsers" />
+
+        <CheckBox
+            android:id="@+id/checkBoxConnected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:clickable="false"
+            android:text="@string/connected" />
+
+        <TextView
+            android:id="@+id/activeUsers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/textViewAvailableUsers"
+            android:text="0" />
+
+        <Switch
+            android:id="@+id/switchVote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/checkBoxConnected"
+            android:layout_alignParentRight="true"
             android:text="@string/sendFavoriteMusic"
             android:weightSum="1" />
-           </LinearLayout>
-            <TextView
-                android:id="@+id/textViewAvailableUsers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:text="@string/availableUsers" />
-            <TextView
-                android:id="@+id/activeUsers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:layout_alignParentBottom="true"
-                android:layout_toRightOf="@+id/textViewAvailableUsers" />
-            <CheckBox
-                android:id="@+id/checkBoxConnected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/connected"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true" />	
+    </RelativeLayout>
+
 </RelativeLayout>

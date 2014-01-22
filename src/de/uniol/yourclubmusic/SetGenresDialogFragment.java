@@ -1,7 +1,6 @@
 package de.uniol.yourclubmusic;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,6 +21,8 @@ public class SetGenresDialogFragment extends DialogFragment {
 	
 	private Handler parentHandler;
 	
+	private static TreeSet<String> availableGenres;
+	
     public SetGenresDialogFragment() {
     }
     
@@ -31,6 +32,26 @@ public class SetGenresDialogFragment extends DialogFragment {
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		availableGenres = new TreeSet<String>();
+		availableGenres.add(Genre.ALTERNATIVE);
+		availableGenres.add(Genre.BLUES);
+		availableGenres.add(Genre.DANCE);
+		availableGenres.add(Genre.ELEKTRO);
+		availableGenres.add(Genre.FUNK);
+		availableGenres.add(Genre.HARDROCK);
+		availableGenres.add(Genre.HIPHOP);
+		availableGenres.add(Genre.HOUSE);
+		availableGenres.add(Genre.JAZZ);
+		availableGenres.add(Genre.METAL);
+		availableGenres.add(Genre.NEWWAVE);
+		availableGenres.add(Genre.PUNK);
+		availableGenres.add(Genre.REGGAE);
+		availableGenres.add(Genre.RNB);
+		availableGenres.add(Genre.ROCK);
+		availableGenres.add(Genre.SOUL);
+		availableGenres.add(Genre.TECHNO);
+		availableGenres.add(Genre.TRANCE);
+		
 //		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //		String imgSett = prefs.getString(keyChannel, "");
 		// Retrieve currently preferred genres
@@ -42,7 +63,8 @@ public class SetGenresDialogFragment extends DialogFragment {
 		final Set<String> preferredGenres = new HashSet<String>(preferredGenresOld);
 		
 		// super inefficient, but whatevs, Get 'unpreffered' genres
-		Set<String> unPreferredGenresSet = new TreeSet<String>(Arrays.asList(Genre.genreArray));
+		@SuppressWarnings("unchecked")
+		Set<String> unPreferredGenresSet = (Set<String>) availableGenres.clone();
 		unPreferredGenresSet.removeAll(preferredGenresOld);
 		final String [] unPreferredGenres =(String[]) unPreferredGenresSet.toArray(new String[unPreferredGenresSet
 				.size()]);

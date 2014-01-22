@@ -61,7 +61,7 @@ public class Websocket {
 							for (int i = 0; i < genres.length(); i++) {
 								JSONObject genre = genres.getJSONObject(i).getJSONObject("genre");
 								Log.d(TAG,genre.getString("name")+" "+genre.getInt("votings")/(double)totalVotings );
-								newGenres.add(new Genre(genre.getString("name"),( genre.getInt("votings")/(double)totalVotings)*100, R.drawable.rock));//TODO drawable
+								newGenres.add(new Genre(genre.getString("name"),( genre.getInt("votings")/(double)totalVotings)*100));
 							}
 							handlerReceiveData.sendData(newGenres, users);
 						
