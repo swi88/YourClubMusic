@@ -30,6 +30,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import de.uniol.yourclubmusic.handler.HandlerClientOnlineOffline;
 import de.uniol.yourclubmusic.handler.HandlerLocationChanged;
 import de.uniol.yourclubmusic.handler.HandlerReceiveData;
@@ -46,7 +47,7 @@ public class MainActivity extends Activity {
 	private HandlerLocationChanged handlerLocationChanged;
 	private HandlerReceiveData handlerReceiveData;
 	private ArrayAdapter<Genre> genreAdapter;
-	
+	private boolean connectButtonClicked;
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
     private IntentFilter[] mFilters;
@@ -59,6 +60,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	connectButtonClicked=false;
     	mContext=this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -117,8 +119,8 @@ public class MainActivity extends Activity {
             startActivity(intentSettings);
             return true;
         case R.id.connect:{
-        	//get list of stations
         	socket.start();
+        	connectButtonClicked=true;
         	return true;
         }
         default:
@@ -126,18 +128,31 @@ public class MainActivity extends Activity {
     	}
     }
     public void registerLocationListener(){
+    	
+    	initLocationListener();
+    	
+    }
+    private void initLocationListener() {
     	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     	LocationListener listener= new LocationListener(handlerLocationChanged);
-    	locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
-    }
-    public void registerHandlers(){
+    	//get updates after 10 meters
+    	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        	locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+    	}
+    	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+    		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+    	}else  Toast.makeText(mContext, "Bitte aktivieren Sie eine Lokalisierung", 50).show();
+    	
+		
+	}
+
+	public void registerHandlers(){
     	Switch buttonSwitch=(Switch) findViewById(R.id.switchVote);
     	if(buttonSwitch!=null){
     		buttonSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
     			
     			@Override
     			public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-    				ArrayList<Genre> g= new ArrayList<Genre>();
     				if(isChecked) socket.sendGenres(getGenres());
     				else socket.sendGenres(new ArrayList<Genre>());
     			}
@@ -150,9 +165,20 @@ public class MainActivity extends Activity {
         		switch (msg.what) {
 				case CLIENT_OFFLINE: 
 					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(false);
+					((TextView)findViewById(R.id.activeUsers)).setText("0");
+					((Switch)findViewById(R.id.switchVote)).setEnabled(false);
+					((Switch)findViewById(R.id.switchVote)).setChecked(false);
+					genres.clear();
+					genreAdapter.clear();
+					String reason=msg.getData().getString(REASON);
+
+					Toast.makeText(mContext, "Verbindung zu "+socket.getStationName()+" verloren, da "+ reason, 50).show();
 					break;
 				case CLIENT_ONLINE:
 					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(true);
+					((Switch)findViewById(R.id.switchVote)).setChecked(false);
+					((Switch)findViewById(R.id.switchVote)).setEnabled(true);
+					Toast.makeText(mContext, "Verbunden mit "+socket.getStationName(), 50).show();
 					break;
 				default:
 					break;
@@ -172,7 +198,8 @@ public class MainActivity extends Activity {
     					genres.add(genre);
     				}
             		((TextView)findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
-        		}else if(bundle.containsKey(STATIONS)){
+        		}else if(bundle.containsKey(STATIONS) &&connectButtonClicked){
+        			connectButtonClicked=false;
         			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);
         			AlertDialog.Builder builder = 
         		            new AlertDialog.Builder(mContext);

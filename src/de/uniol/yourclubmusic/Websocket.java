@@ -21,7 +21,7 @@ public class Websocket {
 	static final String TAG = "Websocket";
 	private String wsuri = "ws://192.168.178.30:8008";
 	//private String wsuri = "ws://134.106.11.64:8008";
-	Boolean isConnected;
+	Boolean isConnected,firstRequest;
 	WebSocketClient client;
 	double latitude,longitude;
 	String connectedToStation;
@@ -30,6 +30,7 @@ public class Websocket {
 	HandlerReceiveData handlerReceiveData;
 	private Websocket() {
 		isConnected=false;
+		firstRequest=true;
 	}
 	public static Websocket getInstance(){
 		if(instance==null) instance= new Websocket();
@@ -44,6 +45,9 @@ public class Websocket {
 		   client = new WebSocketClient(URI.create(wsuri), new WebSocketClient.Listener() {
 			    @Override
 			    public void onConnect() {
+			    	//send location, so the server can send stations in the neighbourhood
+			    	isConnected=true;
+			    	sendLocation(latitude, longitude);
 			    }
 
 			    @Override
@@ -52,10 +56,10 @@ public class Websocket {
 			        try {
 						JSONObject mainObject = new JSONObject(message);
 						if(mainObject.has("genres") &&mainObject.has("users")&&mainObject.has("totalVotings")){
-							if(!isConnected){
+							if(firstRequest){
 								Log.d(TAG, "Status: Connected to " + wsuri);
 					            handlerOnOff.sendClientOnline();
-					            isConnected=true;
+					            firstRequest=false;
 							}
 							JSONArray genres= mainObject.getJSONArray("genres");
 							int users=mainObject.getInt("users");
@@ -91,8 +95,10 @@ public class Websocket {
 			    public void onDisconnect(int code, String reason) {
 			        Log.d(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
 		        	 //reset
-		        	 handlerOnOff.sendClientOffLine();
-		        	 instance=null;
+		        	 handlerOnOff.sendClientOffLine(reason);
+		        	 isConnected=false;
+		        	 firstRequest=true;
+		        	 //instance=null;
 			    }
 
 			    @Override
@@ -149,7 +155,6 @@ public class Websocket {
 			try{
 				JSONObject jsonObject= new JSONObject();
 				JSONArray jsonLocation= new JSONArray();
-				jsonObject.put("station", connectedToStation);
 				jsonLocation.put(new JSONObject().put("latitude", latitude));
 				jsonLocation.put(new JSONObject().put("longitude", longitude));
 				jsonObject.put("location", jsonLocation);
@@ -172,5 +177,8 @@ public class Websocket {
 		}
 		this.connectedToStation=station;
 		
+	}
+	public String getStationName() {
+		return connectedToStation;
 	}
 }

@@ -3,6 +3,7 @@ package de.uniol.yourclubmusic.util;
 import de.uniol.yourclubmusic.handler.HandlerLocationChanged;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 
 public class LocationListener  implements android.location.LocationListener{
 	private static int DISTANCE_IN_METER=10;
@@ -19,8 +20,10 @@ public class LocationListener  implements android.location.LocationListener{
         	oldLocation=location;
         	handler.sendNewLocation(location);	
         }else{
-        	if(calculateDistance(oldLocation, location)>DISTANCE_IN_METER)
-        		handler.sendNewLocation(location);	
+        	if(calculateDistance(oldLocation, location)>DISTANCE_IN_METER){
+        		oldLocation=location;
+        		handler.sendNewLocation(location);
+        	}	
         }
 		
 		
@@ -56,7 +59,7 @@ public class LocationListener  implements android.location.LocationListener{
                         * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2));
     	double c = (double) (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     	double d = earthRadius * c;
-        return d/1000;
+        return d*1000;
     }
 
 }

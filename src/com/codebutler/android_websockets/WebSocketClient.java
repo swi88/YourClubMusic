@@ -134,8 +134,8 @@ public class WebSocketClient {
                     mParser.start(stream);
 
                 } catch (EOFException ex) {
-                    Log.d(TAG, "WebSocket EOF!", ex);
-                    mListener.onDisconnect(0, "EOF");
+                	//Log.d(TAG, "WebSocket EOF!", ex);
+                    //mListener.onDisconnect(0, "EOF");
                     mConnected = false;
 
                 } catch (SSLException ex) {
