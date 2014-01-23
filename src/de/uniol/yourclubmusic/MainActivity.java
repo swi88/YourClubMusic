@@ -98,7 +98,12 @@ public class MainActivity extends Activity {
 			Log.i("Main/onResume", "Current code is not set");
 		}
 	}
-
+	private void connect() {
+		socket.setRequestStations(true);
+		if(!socket.isStarted()){
+    		socket.start();
+    	}else socket.sendStationRequest();
+	}
 	private void connectToClub(String code) {
 		// TODO open the websocket here
 		// Be careful, when the Tag is scanned twice, this activity gets restarted
@@ -122,14 +127,14 @@ public class MainActivity extends Activity {
             startActivity(intentSettings);
             return true;
         case R.id.connect:{
-        	socket.setRequestStations(true);
-        	socket.start();
+        	connect();
         	return true;
         }
         default:
             return super.onOptionsItemSelected(item);
     	}
-    }
+		
+	}
 
 	public void registerHandlers(){
     	Switch buttonSwitch=(Switch) findViewById(R.id.switchVote);
@@ -225,6 +230,7 @@ public class MainActivity extends Activity {
 		    	            @Override
 		    	            public void onClick(DialogInterface dialog, 
 		    	                    int which) {
+		    	            	((Switch)findViewById(R.id.switchVote)).setChecked(false);
 		    	            	connectToClub(stations.get(selectedStation));
 		    	            }
 		    	        });

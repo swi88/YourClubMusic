@@ -20,7 +20,6 @@ public class Websocket {
 	private static Websocket instance=null;
 	static final String TAG = "Websocket";
 	private String wsuri = "ws://192.168.178.30:1988";
-	//private String wsuri = "ws://swi.us.to:1988";
 	Boolean isConnected,firstRequest,canSend,requestStations;
 	WebSocketClient client;
 	double latitude,longitude;
@@ -50,7 +49,7 @@ public class Websocket {
 			    	//send location, so the server can send stations in the neighbourhood
 			    	isConnected=true;
 			    	if(requestStations){
-				    	sendLocation(latitude, longitude);
+				    	sendStationRequest();
 			    	}
 			    }
 
@@ -194,5 +193,28 @@ public class Websocket {
 	}
 	public boolean isStationRequest() {
 		return requestStations;
+	}
+	public boolean isStarted() {
+		return client!=null;
+	}
+	public void sendStationRequest() {
+		if(!isConnected){
+			Log.d(TAG, "Can't send data, client disconnected");
+		}else{
+			Log.d(TAG, "send data to client");
+			try{
+				JSONObject jsonObject= new JSONObject();
+				JSONArray jsonLocation= new JSONArray();
+				jsonLocation.put(new JSONObject().put("latitude", latitude));
+				jsonLocation.put(new JSONObject().put("longitude", longitude));
+				jsonObject.put("location", jsonLocation);
+				jsonObject.put("stationRequest", true);
+				client.send(jsonObject.toString());
+				} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }
