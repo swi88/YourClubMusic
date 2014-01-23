@@ -19,9 +19,9 @@ import de.uniol.yourclubmusic.handler.HandlerReceiveData;
 public class Websocket {
 	private static Websocket instance=null;
 	static final String TAG = "Websocket";
-	private String wsuri = "ws://192.168.178.30:8008";
-	//private String wsuri = "ws://134.106.11.64:8008";
-	Boolean isConnected,firstRequest;
+	private String wsuri = "ws://192.168.178.30:1988";
+	//private String wsuri = "ws://swi.us.to:1988";
+	Boolean isConnected,firstRequest,canSend,requestStations;
 	WebSocketClient client;
 	double latitude,longitude;
 	String connectedToStation;
@@ -31,6 +31,8 @@ public class Websocket {
 	private Websocket() {
 		isConnected=false;
 		firstRequest=true;
+		canSend=false;
+		requestStations=false;
 	}
 	public static Websocket getInstance(){
 		if(instance==null) instance= new Websocket();
@@ -47,7 +49,9 @@ public class Websocket {
 			    public void onConnect() {
 			    	//send location, so the server can send stations in the neighbourhood
 			    	isConnected=true;
-			    	sendLocation(latitude, longitude);
+			    	if(requestStations){
+				    	sendLocation(latitude, longitude);
+			    	}
 			    }
 
 			    @Override
@@ -120,8 +124,8 @@ public class Websocket {
 	}
 	public void sendGenres(List<Genre> genres) {
 		
-		if(!isConnected){
-			Log.d(TAG, "Can't send data, client disconnected");
+		if(!isConnected || !canSend){
+			Log.d(TAG, "Can't send data, client disconnected or disabled");
 		}else{
 			Log.d(TAG, "send data to client");
 			JSONObject jsonObject= new JSONObject();
@@ -180,5 +184,15 @@ public class Websocket {
 	}
 	public String getStationName() {
 		return connectedToStation;
+	}
+	public void setCanSend(boolean canSend) {
+		this.canSend=canSend;
+		
+	}
+	public void setRequestStations(boolean state){
+		this.requestStations=state;
+	}
+	public boolean isStationRequest() {
+		return requestStations;
 	}
 }

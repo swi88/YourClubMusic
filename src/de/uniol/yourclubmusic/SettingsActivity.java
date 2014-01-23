@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
+	ArrayList<Genre> genres;
 	
 	static class PrefferedGenresHandler extends Handler {
 		SettingsActivity settingsActivity;
@@ -110,13 +111,12 @@ public class SettingsActivity extends Activity {
 		
 		// Update view
 		genresAdapter.clear();
-		ArrayList<Genre> genres= new ArrayList<Genre>();
+		genres= new ArrayList<Genre>();
 		for (String genreID : preferredGenresList) {
 			Genre g= new Genre(genreID);
 			genresAdapter.add(g);
 			genres.add(g);
 		}
-		Websocket.getInstance().sendGenres(genres);
 	}
 	
 	@Override
@@ -124,6 +124,12 @@ public class SettingsActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.settings, menu);
 		return true;
+	}
+	@Override
+	public void onBackPressed() {
+		//update genres
+		Websocket.getInstance().sendGenres(genres);
+		super.onBackPressed();
 	}
 
 }

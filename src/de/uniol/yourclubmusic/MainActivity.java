@@ -34,6 +34,7 @@ import android.widget.Toast;
 import de.uniol.yourclubmusic.handler.HandlerClientOnlineOffline;
 import de.uniol.yourclubmusic.handler.HandlerLocationChanged;
 import de.uniol.yourclubmusic.handler.HandlerReceiveData;
+import de.uniol.yourclubmusic.util.LocationHelper;
 import de.uniol.yourclubmusic.util.LocationListener;
 
 public class MainActivity extends Activity {
@@ -47,7 +48,6 @@ public class MainActivity extends Activity {
 	private HandlerLocationChanged handlerLocationChanged;
 	private HandlerReceiveData handlerReceiveData;
 	private ArrayAdapter<Genre> genreAdapter;
-	private boolean connectButtonClicked;
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
     private IntentFilter[] mFilters;
@@ -60,14 +60,15 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    	connectButtonClicked=false;
     	mContext=this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         socket= Websocket.getInstance();
         setContentView(R.layout.activity_main);
         registerHandlers();
-        registerLocationListener();
+        LocationHelper location=new LocationHelper(mContext,handlerLocationChanged);
+
+		((Switch)findViewById(R.id.switchVote)).setEnabled(false);
         
         genreAdapter= new GenreListAdapter(this,R.layout.view_genre,genres);
         
@@ -86,6 +87,8 @@ public class MainActivity extends Activity {
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
 			
+			//TODO start from NFC
+			socket.start();
 			connectToClub(code);
 			// Update view
 			// in the future maybe grep the first part, if we use an actual code,
@@ -119,32 +122,14 @@ public class MainActivity extends Activity {
             startActivity(intentSettings);
             return true;
         case R.id.connect:{
+        	socket.setRequestStations(true);
         	socket.start();
-        	connectButtonClicked=true;
         	return true;
         }
         default:
             return super.onOptionsItemSelected(item);
     	}
     }
-    public void registerLocationListener(){
-    	
-    	initLocationListener();
-    	
-    }
-    private void initLocationListener() {
-    	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    	LocationListener listener= new LocationListener(handlerLocationChanged);
-    	//get updates after 10 meters
-    	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-        	locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
-    	}
-    	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-    		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-    	}else  Toast.makeText(mContext, "Bitte aktivieren Sie eine Lokalisierung", 50).show();
-    	
-		
-	}
 
 	public void registerHandlers(){
     	Switch buttonSwitch=(Switch) findViewById(R.id.switchVote);
@@ -153,8 +138,18 @@ public class MainActivity extends Activity {
     			
     			@Override
     			public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-    				if(isChecked) socket.sendGenres(getGenres());
-    				else socket.sendGenres(new ArrayList<Genre>());
+    				if(isChecked){
+    					socket.setCanSend(true);
+    					socket.sendGenres(getGenres());
+    					Toast.makeText(mContext, "An Abstimmung teilgenommen", 50).show();
+    					
+    				}
+    				else{
+    					socket.sendGenres(new ArrayList<Genre>());
+    					socket.setCanSend(false);
+    					Toast.makeText(mContext, "Stimmen zurückgenommen", 50).show();
+    					
+    				}
     			}
     		});
     	}
@@ -171,8 +166,12 @@ public class MainActivity extends Activity {
 					genres.clear();
 					genreAdapter.clear();
 					String reason=msg.getData().getString(REASON);
-
-					Toast.makeText(mContext, "Verbindung zu "+socket.getStationName()+" verloren, da "+ reason, 50).show();
+					AlertDialog.Builder builder = 
+        		            new AlertDialog.Builder(mContext);
+		            builder.setTitle("Warnung");
+		            builder.setMessage("Verbindung zu "+socket.getStationName()+" verloren, da "+ reason);
+		            builder.setPositiveButton("OK", null);
+		            builder.show();
 					break;
 				case CLIENT_ONLINE:
 					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(true);
@@ -193,13 +192,11 @@ public class MainActivity extends Activity {
         			ArrayList<Genre> genresNew= (ArrayList<Genre>) bundle.getSerializable(GENRES);
             		genres.clear();
             		genreAdapter.clear();
-            		
-            		for (Genre genre : genresNew) {
-    					genres.add(genre);
-    				}
+            		genres.addAll(genresNew);
+        			Collections.sort(genres);
             		((TextView)findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
-        		}else if(bundle.containsKey(STATIONS) &&connectButtonClicked){
-        			connectButtonClicked=false;
+        		}else if(bundle.containsKey(STATIONS) &&socket.isStationRequest()){
+        			socket.setRequestStations(false);
         			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);
         			AlertDialog.Builder builder = 
         		            new AlertDialog.Builder(mContext);

@@ -97,8 +97,8 @@ public class Genre  implements Comparable<Genre> {
 	}
 	@Override
 	public int compareTo(Genre another) {
-		 if (getRatingInPercent() < another.getRatingInPercent()) return -1;
-	     if (getRatingInPercent() > another.getRatingInPercent()) return 1;
+		 if (getRatingInPercent() > another.getRatingInPercent()) return -1;
+	     if (getRatingInPercent() < another.getRatingInPercent()) return 1;
 	     return 0;
 	}
 }
