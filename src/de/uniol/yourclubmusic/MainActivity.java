@@ -52,7 +52,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         socket= Websocket.getInstance();
-        setContentView(R.layout.activity_main);
         registerHandlers();
         // LocationHelper location=new LocationHelper(this,handlerLocationChanged);
 
@@ -72,6 +71,15 @@ public class MainActivity extends Activity {
 		Intent intent = getIntent();
 		String code = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 		
+		// FIXME this must work, so that the commented rfid part below can work
+		/*
+		code = "Amadeus";
+		if(!socket.isStarted()){
+			socket.start();
+		}
+		connectToClub(code);
+		*/
+		 /*
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
 			
@@ -85,6 +93,7 @@ public class MainActivity extends Activity {
 		} else {
 			Log.i("Main/onResume", "Current code is not set");
 		}
+		*/
 	}
 	private void connect() {
 		socket.setRequestStations(true);
@@ -170,11 +179,11 @@ public class MainActivity extends Activity {
 				if(isChecked){
 					context.socket.setCanSend(true);
 					context.socket.sendGenres(context.getGenres());
-					Toast.makeText(context, "An Abstimmung teilgenommen", 50).show();
+					Toast.makeText(context, context.getString(R.string.voting_activated), Toast.LENGTH_SHORT).show();
 				} else {
 					context.socket.sendGenres(new ArrayList<Genre>());
 					context.socket.setCanSend(false);
-					Toast.makeText(context, "Stimmen zurückgenommen", 50).show();
+					Toast.makeText(context, context.getString(R.string.voting_deactivated), Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
@@ -244,7 +253,7 @@ public class MainActivity extends Activity {
 	    			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);
 	    			AlertDialog.Builder builder = 
 	    		            new AlertDialog.Builder(context);
-	    		        builder.setTitle("Wähle eine Station:");
+	    		        builder.setTitle(context.getString(R.string.voting_choose_station));
 	    		        builder.setSingleChoiceItems(
 	    		                stations.toArray(new CharSequence[stations.size()]), 
 	    		                -1,new DialogInterface.OnClickListener() {

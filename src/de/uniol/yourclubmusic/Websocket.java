@@ -19,7 +19,7 @@ import de.uniol.yourclubmusic.handler.HandlerReceiveData;
 public class Websocket {
 	private static Websocket instance=null;
 	static final String TAG = "Websocket";
-	private String wsuri = "ws://192.168.178.30:1988";
+	private String wsuri = "ws://swi.us.to:1988";
 	Boolean isConnected,firstRequest,canSend,requestStations;
 	WebSocketClient client;
 	double latitude,longitude;
