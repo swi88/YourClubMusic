@@ -72,19 +72,20 @@ public class MainActivity extends Activity {
 		String code = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 		
 		// FIXME this must work, so that the commented rfid part below can work
-		/*
+		Log.e("WEBSOCKETPROBLEM", "Something goes wrong from here on");
 		code = "Amadeus";
 		if(!socket.isStarted()){
 			socket.start();
 		}
 		connectToClub(code);
-		*/
-		 /*
+		
+		/*
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
 			
-			//TODO start from NFC
-			socket.start();
+			if(!socket.isStarted()){
+				socket.start();
+			}
 			connectToClub(code);
 			// Update view
 			// in the future maybe grep the first part, if we use an actual code,
