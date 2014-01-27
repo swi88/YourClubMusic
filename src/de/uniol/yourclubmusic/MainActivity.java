@@ -1,5 +1,6 @@
 package de.uniol.yourclubmusic;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,16 +9,11 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
-import android.content.IntentFilter;
-
 import android.location.LocationManager;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -38,7 +34,7 @@ import de.uniol.yourclubmusic.util.LocationHelper;
 import de.uniol.yourclubmusic.util.LocationListener;
 
 public class MainActivity extends Activity {
-	
+
 	public static final String EXTRA_MESSAGE = "CODEOFTHEDAY";
 	
 	private List<Genre> genres= new ArrayList<Genre>();
@@ -48,25 +44,16 @@ public class MainActivity extends Activity {
 	private HandlerLocationChanged handlerLocationChanged;
 	private HandlerReceiveData handlerReceiveData;
 	private ArrayAdapter<Genre> genreAdapter;
-    private NfcAdapter mAdapter;
-    private PendingIntent mPendingIntent;
-    private IntentFilter[] mFilters;
-    private String[][] mTechLists;
-    private TextView mText;
-    private int mCount = 0;
     private int selectedStation=0;
-    private Context mContext; 
     private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    	mContext=this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         socket= Websocket.getInstance();
-        setContentView(R.layout.activity_main);
         registerHandlers();
-        LocationHelper location=new LocationHelper(mContext,handlerLocationChanged);
+        // LocationHelper location=new LocationHelper(this,handlerLocationChanged);
 
 		((Switch)findViewById(R.id.switchVote)).setEnabled(false);
         
@@ -84,11 +71,21 @@ public class MainActivity extends Activity {
 		Intent intent = getIntent();
 		String code = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 		
+		// FIXME this must work, so that the commented rfid part below can work
+		Log.e("WEBSOCKETPROBLEM", "Something goes wrong from here on");
+		code = "Amadeus";
+		if(!socket.isStarted()){
+			socket.start();
+		}
+		connectToClub(code);
+		
+		/*
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
 			
-			//TODO start from NFC
-			socket.start();
+			if(!socket.isStarted()){
+				socket.start();
+			}
 			connectToClub(code);
 			// Update view
 			// in the future maybe grep the first part, if we use an actual code,
@@ -97,6 +94,7 @@ public class MainActivity extends Activity {
 		} else {
 			Log.i("Main/onResume", "Current code is not set");
 		}
+		*/
 	}
 	private void connect() {
 		socket.setRequestStations(true);
@@ -139,119 +137,15 @@ public class MainActivity extends Activity {
 	public void registerHandlers(){
     	Switch buttonSwitch=(Switch) findViewById(R.id.switchVote);
     	if(buttonSwitch!=null){
-    		buttonSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-    			
-    			@Override
-    			public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-    				if(isChecked){
-    					socket.setCanSend(true);
-    					socket.sendGenres(getGenres());
-    					Toast.makeText(mContext, "An Abstimmung teilgenommen", 50).show();
-    					
-    				}
-    				else{
-    					socket.sendGenres(new ArrayList<Genre>());
-    					socket.setCanSend(false);
-    					Toast.makeText(mContext, "Stimmen zurückgenommen", 50).show();
-    					
-    				}
-    			}
-    		});
+    		buttonSwitch.setOnCheckedChangeListener(new MyOnCheckedChangeListener(this));
     	}
-    	handlerOnOff= new HandlerClientOnlineOffline(){
-        	@Override
-        	public void handleMessage(Message msg) {
-        		
-        		switch (msg.what) {
-				case CLIENT_OFFLINE: 
-					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(false);
-					((TextView)findViewById(R.id.activeUsers)).setText("0");
-					((Switch)findViewById(R.id.switchVote)).setEnabled(false);
-					((Switch)findViewById(R.id.switchVote)).setChecked(false);
-					genres.clear();
-					genreAdapter.clear();
-					String reason=msg.getData().getString(REASON);
-					AlertDialog.Builder builder = 
-        		            new AlertDialog.Builder(mContext);
-		            builder.setTitle("Warnung");
-		            builder.setMessage("Verbindung zu "+socket.getStationName()+" verloren, da "+ reason);
-		            builder.setPositiveButton("OK", null);
-		            builder.show();
-					break;
-				case CLIENT_ONLINE:
-					((CheckBox)findViewById(R.id.checkBoxConnected)).setChecked(true);
-					((Switch)findViewById(R.id.switchVote)).setChecked(false);
-					((Switch)findViewById(R.id.switchVote)).setEnabled(true);
-					Toast.makeText(mContext, "Verbunden mit "+socket.getStationName(), 50).show();
-					break;
-				default:
-					break;
-				}
-        		super.handleMessage(msg);
-        	}
-        };
-        handlerReceiveData= new HandlerReceiveData(){
-        	public void handleMessage(Message msg) {
-        		Bundle bundle= msg.getData();
-        		if(bundle.containsKey(GENRES)){
-        			ArrayList<Genre> genresNew= (ArrayList<Genre>) bundle.getSerializable(GENRES);
-            		genres.clear();
-            		genreAdapter.clear();
-            		genres.addAll(genresNew);
-        			Collections.sort(genres);
-            		((TextView)findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
-					((Switch)findViewById(R.id.switchVote)).setEnabled(true);
-        		}else if(bundle.containsKey(STATIONS) &&socket.isStationRequest()){
-        			socket.setRequestStations(false);
-        			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);
-        			AlertDialog.Builder builder = 
-        		            new AlertDialog.Builder(mContext);
-        		        builder.setTitle("Wähle eine Station:");
-        		        builder.setSingleChoiceItems(
-        		                stations.toArray(new CharSequence[stations.size()]), 
-        		                -1,new DialogInterface.OnClickListener() {
-        		    				
-        		    				@Override
-        		    				public void onClick(DialogInterface dialog, int which) {
-        		    					selectedStation=which;
-        		    				}
-        		    			});
-        		      builder.setCancelable(true)
-        		      .setNegativeButton("abbrechen", 
-        		    	        new DialogInterface.OnClickListener() 
-        		    	        {
-        		    	            @Override
-        		    	            public void onClick(DialogInterface dialog, 
-        		    	                    int which) {
-        		    	               
-        		    	            }
-        		    	        });
-        		     builder.setPositiveButton("verbinden",  new DialogInterface.OnClickListener() 
-		    	        {
-		    	            @Override
-		    	            public void onClick(DialogInterface dialog, 
-		    	                    int which) {
-		    	            	((Switch)findViewById(R.id.switchVote)).setChecked(false);
-		    	            	connectToClub(stations.get(selectedStation));
-		    	            }
-		    	        });
-        		     builder.create().show();
-        			//socket.setStations("Amadeus");
-        		}
-        	};
-        };
+    	    	handlerOnOff = new MyHandlerClientOnlineOffline(this);
+        handlerReceiveData = new MyHandlerReceiveData(this);
 
     	socket.registerOnOfflineHandler(handlerOnOff);
     	socket.registerHandlerReceiveData(handlerReceiveData);
     	
-        handlerLocationChanged= new HandlerLocationChanged(){
-        	@Override
-        	public void handleMessage(Message msg) {
-        		Bundle bundle= msg.getData();
-        		socket.sendLocation(bundle.getDouble(LATITUDE),bundle.getDouble(LONGITUDE));
-        		super.handleMessage(msg);
-        	}
-        };
+        handlerLocationChanged= new MyHandlerLocationChanged(this);
     }
 
 
@@ -271,4 +165,146 @@ public class MainActivity extends Activity {
 		}
 		return preferedGenres;
 	}
+	
+	static class MyOnCheckedChangeListener implements OnCheckedChangeListener {
+		private final WeakReference<MainActivity> mainActivity; 
+
+		private MyOnCheckedChangeListener(MainActivity mainActivity) {
+			this.mainActivity = new WeakReference<MainActivity>(mainActivity);
+		}
+
+		@Override
+		public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+			MainActivity context = mainActivity.get();
+			if(context != null) {
+				if(isChecked){
+					context.socket.setCanSend(true);
+					context.socket.sendGenres(context.getGenres());
+					Toast.makeText(context, context.getString(R.string.voting_activated), Toast.LENGTH_SHORT).show();
+				} else {
+					context.socket.sendGenres(new ArrayList<Genre>());
+					context.socket.setCanSend(false);
+					Toast.makeText(context, context.getString(R.string.voting_deactivated), Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+	}
+	
+	static class MyHandlerClientOnlineOffline extends HandlerClientOnlineOffline {
+		private final WeakReference<MainActivity> mainActivity; 
+
+		private MyHandlerClientOnlineOffline(MainActivity mainActivity) {
+			this.mainActivity = new WeakReference<MainActivity>(mainActivity);
+		}
+		
+    	@Override
+    	public void handleMessage(Message msg) {
+    		MainActivity context = mainActivity.get();
+			if(context != null) {
+				switch (msg.what) {
+				case CLIENT_OFFLINE: 
+					((CheckBox)context.findViewById(R.id.checkBoxConnected)).setChecked(false);
+					((TextView)context.findViewById(R.id.activeUsers)).setText("0");
+					((Switch)context.findViewById(R.id.switchVote)).setEnabled(false);
+					((Switch)context.findViewById(R.id.switchVote)).setChecked(false);
+					context.genres.clear();
+					context.genreAdapter.clear();
+					String reason=msg.getData().getString(REASON);
+					AlertDialog.Builder builder = 
+	    		            new AlertDialog.Builder(context);
+		            builder.setTitle("Warnung");
+		            builder.setMessage("Verbindung zu "+context.socket.getStationName()+" verloren, da "+ reason);
+		            builder.setPositiveButton("OK", null);
+		            builder.show();
+					break;
+				case CLIENT_ONLINE:
+					((CheckBox)context.findViewById(R.id.checkBoxConnected)).setChecked(true);
+					((Switch)context.findViewById(R.id.switchVote)).setChecked(false);
+					((Switch)context.findViewById(R.id.switchVote)).setEnabled(true);
+					Toast.makeText(context, "Verbunden mit "+context.socket.getStationName(), 50).show();
+					break;
+				default:
+					break;
+				}
+	    		super.handleMessage(msg);
+			}
+    	}
+    }
+	
+	static class MyHandlerReceiveData extends HandlerReceiveData {
+		private final WeakReference<MainActivity> mainActivity; 
+
+		private MyHandlerReceiveData(MainActivity mainActivity) {
+			this.mainActivity = new WeakReference<MainActivity>(mainActivity);
+		}
+		
+    	public void handleMessage(Message msg) {
+    		final MainActivity context = mainActivity.get();
+			if(context != null) {
+				Bundle bundle= msg.getData();
+	    		if(bundle.containsKey(GENRES)){
+	    			ArrayList<Genre> genresNew= (ArrayList<Genre>) bundle.getSerializable(GENRES);
+	    			context.genres.clear();
+	    			context.genreAdapter.clear();
+	    			context.genres.addAll(genresNew);
+	    			Collections.sort(context.genres);
+	        		((TextView)context.findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
+	    		}else if(bundle.containsKey(STATIONS) &&context.socket.isStationRequest()){
+	    			context.socket.setRequestStations(false);
+	    			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);
+	    			AlertDialog.Builder builder = 
+	    		            new AlertDialog.Builder(context);
+	    		        builder.setTitle(context.getString(R.string.voting_choose_station));
+	    		        builder.setSingleChoiceItems(
+	    		                stations.toArray(new CharSequence[stations.size()]), 
+	    		                -1,new DialogInterface.OnClickListener() {
+	    		    				
+	    		    				@Override
+	    		    				public void onClick(DialogInterface dialog, int which) {
+	    		    					context.selectedStation=which;
+	    		    				}
+	    		    			});
+	    		      builder.setCancelable(true)
+	    		      .setNegativeButton("abbrechen", 
+	    		    	        new DialogInterface.OnClickListener() 
+	    		    	        {
+	    		    	            @Override
+	    		    	            public void onClick(DialogInterface dialog, 
+	    		    	                    int which) {
+	    		    	               
+	    		    	            }
+	    		    	        });
+	    		     builder.setPositiveButton("verbinden",  new DialogInterface.OnClickListener() 
+		    	        {
+		    	            @Override
+		    	            public void onClick(DialogInterface dialog, 
+		    	                    int which) {
+		    	            	((Switch)context.findViewById(R.id.switchVote)).setChecked(false);
+		    	            	context.connectToClub(stations.get(context.selectedStation));
+		    	            }
+		    	        });
+	    		     builder.create().show();
+	    			//socket.setStations("Amadeus");
+	    		}
+			}
+    	}
+    }
+	
+	static class MyHandlerLocationChanged extends HandlerLocationChanged {
+		private final WeakReference<MainActivity> mainActivity; 
+
+		private MyHandlerLocationChanged(MainActivity mainActivity) {
+			this.mainActivity = new WeakReference<MainActivity>(mainActivity);
+		}
+		
+    	@Override
+    	public void handleMessage(Message msg) {
+    		final MainActivity context = mainActivity.get();
+			if(context != null) {
+				Bundle bundle= msg.getData();
+				context.socket.sendLocation(bundle.getDouble(LATITUDE),bundle.getDouble(LONGITUDE));
+	    		super.handleMessage(msg);
+			}
+    	}
+    }
 }
