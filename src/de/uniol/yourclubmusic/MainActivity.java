@@ -71,15 +71,6 @@ public class MainActivity extends Activity {
 		Intent intent = getIntent();
 		String code = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 		
-		// FIXME this must work, so that the commented rfid part below can work
-		Log.e("WEBSOCKETPROBLEM", "Something goes wrong from here on");
-		code = "Amadeus";
-		if(!socket.isStarted()){
-			socket.start();
-		}
-		connectToClub(code);
-		
-		/*
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
 			
@@ -94,7 +85,6 @@ public class MainActivity extends Activity {
 		} else {
 			Log.i("Main/onResume", "Current code is not set");
 		}
-		*/
 	}
 	private void connect() {
 		socket.setRequestStations(true);
