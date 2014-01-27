@@ -70,13 +70,15 @@ public class MainActivity extends Activity {
 		
 		Intent intent = getIntent();
 		String code = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+		intent.removeExtra(MainActivity.EXTRA_MESSAGE);
+		
+		if(!socket.isStarted()){
+			socket.start();
+		}
 		
 		if(code != null) {
 			Log.i("Main/onResume", "Current code is: " + code);
 			
-			if(!socket.isStarted()){
-				socket.start();
-			}
 			connectToClub(code);
 			// Update view
 			// in the future maybe grep the first part, if we use an actual code,
