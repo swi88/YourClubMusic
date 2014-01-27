@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         socket= Websocket.getInstance();
         registerHandlers();
-        // LocationHelper location=new LocationHelper(this,handlerLocationChanged);
+        LocationHelper location=new LocationHelper(this,handlerLocationChanged);
 
 		((Switch)findViewById(R.id.switchVote)).setEnabled(false);
         
