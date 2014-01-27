@@ -109,7 +109,7 @@ public class MainActivity extends Activity {
 		// Be careful, when the Tag is scanned twice, this activity gets restarted
 		// But maybe we should ignore this case for now
 		this.setTitle(code + " - " + getString(R.string.app_name));
-	    socket.setStations(code);
+	    socket.setStation(code);
 	}
 
 	@Override
@@ -200,6 +200,7 @@ public class MainActivity extends Activity {
             		genres.addAll(genresNew);
         			Collections.sort(genres);
             		((TextView)findViewById(R.id.activeUsers)).setText(""+bundle.getInt(USERS));
+					((Switch)findViewById(R.id.switchVote)).setEnabled(true);
         		}else if(bundle.containsKey(STATIONS) &&socket.isStationRequest()){
         			socket.setRequestStations(false);
         			final ArrayList<String> stations= (ArrayList<String>) bundle.getSerializable(STATIONS);

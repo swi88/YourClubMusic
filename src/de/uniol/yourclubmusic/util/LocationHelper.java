@@ -25,7 +25,8 @@ public class LocationHelper {
     	if(!currentProvider.isEmpty()){
     		//get last known position
     		Location last=locationManager.getLastKnownLocation(currentProvider);
-    		handlerLocationChanged.sendNewLocation(last);
+    		if(last!=null)
+    			handlerLocationChanged.sendNewLocation(last);
     	}
 	}
 }

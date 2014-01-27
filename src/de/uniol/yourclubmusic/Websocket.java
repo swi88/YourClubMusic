@@ -3,7 +3,10 @@ package de.uniol.yourclubmusic;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -19,11 +22,13 @@ import de.uniol.yourclubmusic.handler.HandlerReceiveData;
 public class Websocket {
 	private static Websocket instance=null;
 	static final String TAG = "Websocket";
-	private String wsuri = "ws://192.168.178.30:1988";
+	//private String wsuri = "ws://192.168.178.30:1988";
+	private String wsuri = "ws://swi.us.to:1988";
 	Boolean isConnected,firstRequest,canSend,requestStations;
 	WebSocketClient client;
 	double latitude,longitude;
 	String connectedToStation;
+	TimerTask keepAliveTask;
 
 	HandlerClientOnlineOffline handlerOnOff;
 	HandlerReceiveData handlerReceiveData;
@@ -32,6 +37,7 @@ public class Websocket {
 		firstRequest=true;
 		canSend=false;
 		requestStations=false;
+		connectedToStation="";
 	}
 	public static Websocket getInstance(){
 		if(instance==null) instance= new Websocket();
@@ -46,8 +52,12 @@ public class Websocket {
 		   client = new WebSocketClient(URI.create(wsuri), new WebSocketClient.Listener() {
 			    @Override
 			    public void onConnect() {
+			    	initKeepAlive();
 			    	//send location, so the server can send stations in the neighbourhood
 			    	isConnected=true;
+			    	if(!connectedToStation.equals("")){
+			    		setStation(connectedToStation);
+			    	}
 			    	if(requestStations){
 				    	sendStationRequest();
 			    	}
@@ -99,6 +109,8 @@ public class Websocket {
 			        Log.d(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
 		        	 //reset
 		        	 handlerOnOff.sendClientOffLine(reason);
+		        	 client=null;
+		        	 
 		        	 isConnected=false;
 		        	 firstRequest=true;
 		        	 //instance=null;
@@ -169,14 +181,16 @@ public class Websocket {
 		}
 		
 	}
-	public void setStations(String station) {
-		JSONObject jsonObject= new JSONObject();
-		try {
-			jsonObject.put("station", station);
-			client.send(jsonObject.toString());
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void setStation(String station) {
+		if(isConnected){
+			JSONObject jsonObject= new JSONObject();
+			try {
+				jsonObject.put("station", station);
+				client.send(jsonObject.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		this.connectedToStation=station;
 		
@@ -215,6 +229,27 @@ public class Websocket {
 				e.printStackTrace();
 			}
 		}
-		
+	}
+	private void initKeepAlive(){
+		//send keep alive every 2 minutes
+		int delay= 2*1000*60;
+		Timer timer = new Timer();
+	    keepAliveTask = new TimerTask() {
+			
+			@Override
+			public void run() {
+				if(isConnected){
+					JSONObject jsonObject= new JSONObject();
+					try {
+						jsonObject.put("keep alive", true);
+						client.send(jsonObject.toString());
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		};	
+		timer.schedule(keepAliveTask, 3000,delay);
 	}
 }
