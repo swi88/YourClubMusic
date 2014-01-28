@@ -23,6 +23,7 @@ public class Websocket {
 	private static Websocket instance=null;
 	static final String TAG = "Websocket";
 	private String wsuri = "ws://swi.us.to:1988";
+	//private String wsuri = "ws://192.168.178.30:1988";
 	Boolean isConnected,firstRequest,canSend,requestStations;
 	WebSocketClient client;
 	double latitude,longitude;
@@ -107,11 +108,11 @@ public class Websocket {
 			    public void onDisconnect(int code, String reason) {
 			        Log.d(TAG, String.format("Disconnected! Code: %d Reason: %s", code, reason));
 		        	 //reset
-		        	 handlerOnOff.sendClientOffLine(reason);
-		        	 client=null;
-		        	 
+			         connectedToStation="";
+			         client=null;
 		        	 isConnected=false;
 		        	 firstRequest=true;
+		        	 handlerOnOff.sendClientOffLine(reason);
 		        	 //instance=null;
 			    }
 

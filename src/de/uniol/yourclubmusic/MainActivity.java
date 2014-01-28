@@ -195,6 +195,8 @@ public class MainActivity extends Activity {
 			if(context != null) {
 				switch (msg.what) {
 				case CLIENT_OFFLINE: 
+
+					mainActivity.get().setTitle(mainActivity.get().getString(R.string.app_name));
 					((CheckBox)context.findViewById(R.id.checkBoxConnected)).setChecked(false);
 					((TextView)context.findViewById(R.id.activeUsers)).setText("0");
 					((Switch)context.findViewById(R.id.switchVote)).setEnabled(false);
